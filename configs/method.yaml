@@ -1,0 +1,17 @@
+experiment_name: method_structure_dependency
+
+dataset:
+  name: repoeval
+
+chunking:
+  method: structure_aware
+
+retrieval:
+  method: bm25
+  top_k: 10
+
+packing:
+  method: dependency_aware
+
+evaluation:
+  retrieval_metrics: [mrr, recall@5, recall@10, ndcg@10]

@@ -1,0 +1,19 @@
+experiment_name: baseline_fixed_bm25_topk
+
+dataset:
+  name: codesearchnet
+
+chunking:
+  method: fixed
+  chunk_size: 300
+  chunk_overlap: 50
+
+retrieval:
+  method: bm25
+  top_k: 10
+
+packing:
+  method: topk
+
+evaluation:
+  retrieval_metrics: [mrr, recall@5, recall@10, ndcg@10]

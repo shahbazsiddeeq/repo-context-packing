@@ -1,0 +1,47 @@
+# Python
+  __pycache__/
+  *.pyc
+  *.pyo
+  .venv/
+  .venv-linux/
+  
+  # Data
+  data/raw/
+  data/processed/
+  data/cache/
+  
+  # Large benchmark data
+  cceval/
+  
+  # Outputs -- intermediate/scratch runs excluded
+  checkpoints/
+  outputs/logs/
+  outputs/runs/
+  outputs/completion_step1/
+  outputs/completion_step1_smoketest/
+  outputs/completion_step1_smoketest_v1/
+  outputs/completion_step1_v1/
+  outputs/completion_step1_v2/
+  outputs/dense_smoke/
+  outputs/dense_smoke2/
+  outputs/dense_timing/
+  outputs/cceval_python_hf_bm25_smoke/
+  outputs/cceval_python_hf_promptonly_smoke/
+  outputs/completion_dense_starcoder2_7b.log
+  outputs/*_log.txt
+  outputs/dense_retrieval_log.txt
+  
+  # OS / editor
+  .DS_Store
+  .vscode/
+  .idea/
+  *.swp
+  
+  # Secrets
+  .env
+  .env.*
+  
+  # Scratch
+  commands.txt
+  *.log
+  

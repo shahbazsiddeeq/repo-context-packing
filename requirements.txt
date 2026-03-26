@@ -1,0 +1,9 @@
+numpy
+pandas
+pyyaml
+tqdm
+rank-bm25
+scikit-learn
+matplotlib
+tree-sitter
+pytest

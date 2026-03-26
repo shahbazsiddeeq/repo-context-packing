@@ -1,0 +1,15 @@
+project_name: repo-context-packing
+seed: 42
+
+paths:
+  raw_data: data/raw
+  processed_data: data/processed
+  cache: data/cache
+  outputs: outputs
+
+budget:
+  max_context_tokens: 4000
+
+logging:
+  save_runs: true
+  save_logs: true
