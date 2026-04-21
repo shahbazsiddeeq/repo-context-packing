@@ -1,0 +1,50 @@
+[
+  {
+    "mode": "fixed",
+    "examples_requested": 200,
+    "usable": 200,
+    "MRR": 0.5634880952380953,
+    "Recall@1": 0.47,
+    "Recall@5": 0.685,
+    "skipped_repo": 0,
+    "skipped_files": 0,
+    "skipped_chunks": 0,
+    "skipped_gold": 0
+  },
+  {
+    "mode": "fixed+locality",
+    "examples_requested": 200,
+    "usable": 200,
+    "MRR": 0.6433809523809524,
+    "Recall@1": 0.56,
+    "Recall@5": 0.745,
+    "skipped_repo": 0,
+    "skipped_files": 0,
+    "skipped_chunks": 0,
+    "skipped_gold": 0
+  },
+  {
+    "mode": "structure",
+    "examples_requested": 200,
+    "usable": 195,
+    "MRR": 0.49965608465608463,
+    "Recall@1": 0.37435897435897436,
+    "Recall@5": 0.6871794871794872,
+    "skipped_repo": 0,
+    "skipped_files": 0,
+    "skipped_chunks": 0,
+    "skipped_gold": 5
+  },
+  {
+    "mode": "hybrid",
+    "examples_requested": 200,
+    "usable": 200,
+    "MRR": 0.4668273809523808,
+    "Recall@1": 0.345,
+    "Recall@5": 0.615,
+    "skipped_repo": 0,
+    "skipped_files": 0,
+    "skipped_chunks": 0,
+    "skipped_gold": 0
+  }
+]

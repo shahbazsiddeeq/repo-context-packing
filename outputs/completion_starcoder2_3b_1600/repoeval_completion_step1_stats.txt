@@ -1,0 +1,13 @@
+RepoEval completion step-1 statistics
+
+Per-example CSV: outputs/completion_starcoder2_3b_1600/repoeval_completion_step1_per_example.csv
+Examples: 1600
+Bootstrap samples: 10000
+
+Prompt-only EM: 33.75% (540/1600), Wilson 95% CI [31.47%, 36.10%], bootstrap 95% CI [31.44%, 36.06%]
+BM25 EM: 77.62% (1242/1600), Wilson 95% CI [75.52%, 79.60%], bootstrap 95% CI [75.56%, 79.69%]
+Locality EM: 79.19% (1267/1600), Wilson 95% CI [77.13%, 81.11%], bootstrap 95% CI [77.19%, 81.19%]
+
+BM25 - Prompt-only: Δ=43.88%, bootstrap 95% CI [41.37%, 46.38%], McNemar exact p=6.51303e-189, wins/losses=718/16
+Locality - BM25: Δ=1.56%, bootstrap 95% CI [0.75%, 2.44%], McNemar exact p=0.000247088, wins/losses=35/10
+Locality - Prompt-only: Δ=45.44%, bootstrap 95% CI [42.94%, 47.94%], McNemar exact p=1.55574e-199, wins/losses=740/13

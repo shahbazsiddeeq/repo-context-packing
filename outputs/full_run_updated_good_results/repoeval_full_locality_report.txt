@@ -1,0 +1,16 @@
+RepoEval full locality reranking run
+
+Total benchmark examples loaded: 1600
+Usable examples: 1600
+Skipped (repo not found): 0
+Skipped (repo files missing): 0
+Skipped (no chunks): 0
+Skipped (gold chunk not matched): 0
+
+Baseline summary:
+{'usable_examples': 1600, 'MRR': 0.7060252976190481, 'Recall@1': 0.583125, 'Recall@5': 0.855625}
+
+Reranked summary:
+{'usable_examples': 1600, 'MRR': 0.7393787202380957, 'Recall@1': 0.620625, 'Recall@5': 0.883125}
+
+Reranker parameters: same_file_bonus=150.0, line_distance_weight=0.2

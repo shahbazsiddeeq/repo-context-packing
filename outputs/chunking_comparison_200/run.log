@@ -1,0 +1,53 @@
+Loading 200 RepoEval examples...
+Loaded: 200 examples
+
+=== Running: fixed  ===
+  [fixed] 1/200
+  [fixed] 50/200
+  [fixed] 100/200
+  [fixed] 150/200
+  [fixed] 200/200
+
+  [fixed] usable=200 MRR=0.5635 R@1=0.4700 R@5=0.6850
+  skipped: repo=0 files=0 chunks=0 gold=0
+=== Running: fixed + locality ===
+  [fixed+locality] 1/200
+  [fixed+locality] 50/200
+  [fixed+locality] 100/200
+  [fixed+locality] 150/200
+  [fixed+locality] 200/200
+
+  [fixed+locality] usable=200 MRR=0.6434 R@1=0.5600 R@5=0.7450
+  skipped: repo=0 files=0 chunks=0 gold=0
+=== Running: structure  ===
+  [structure] 1/200
+  [structure] 50/200
+  [structure] 100/200
+  [structure] 150/200
+  [structure] 200/200
+
+  [structure] usable=195 MRR=0.4997 R@1=0.3744 R@5=0.6872
+  skipped: repo=0 files=0 chunks=0 gold=5
+=== Running: hybrid  ===
+  [hybrid] 1/200
+  [hybrid] 50/200
+  [hybrid] 100/200
+  [hybrid] 150/200
+  [hybrid] 200/200
+
+  [hybrid] usable=200 MRR=0.4668 R@1=0.3450 R@5=0.6150
+  skipped: repo=0 files=0 chunks=0 gold=0
+
+======================================================================
+Chunking Comparison — 200 examples
+Method                         MRR      R@1      R@5   Usable
+----------------------------------------------------------------------
+fixed                       0.5635   0.4700   0.6850      200
+fixed+locality              0.6434   0.5600   0.7450      200
+structure                   0.4997   0.3744   0.6872      195
+hybrid                      0.4668   0.3450   0.6150      200
+======================================================================
+
+Saved: outputs/chunking_comparison_200/chunking_comparison_summary.csv
+Saved: outputs/chunking_comparison_200/chunking_comparison_per_example.csv
+Saved: outputs/chunking_comparison_200/chunking_comparison_summary.json

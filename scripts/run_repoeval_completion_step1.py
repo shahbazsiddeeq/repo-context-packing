@@ -22,7 +22,7 @@ from scripts.run_repoeval_first_experiment import (
 # Main experiment settings
 # -----------------------------
 MODEL_NAME = "bigcode/starcoder2-7b"
-MAX_ROWS = 200
+MAX_ROWS = 5
 TOP_K = 10
 MAX_FILES_PER_REPO = 1000
 
@@ -203,6 +203,10 @@ def main():
         repo_name = ex["repo"]
         target_path = ex["path"]
         prompt = ex["query"]
+
+        retrieval_query = ex["query"]
+        generation_prefix = ex.get("prompt", ex["query"])
+
         gold_line = ex["ground_truth"]
         target_line = ex["line_no"]
 
@@ -228,7 +232,8 @@ def main():
             continue
 
         retriever = BM25CodeRetriever(all_chunks)
-        bm25_results = retriever.search(prompt, top_k=TOP_K)
+        # bm25_results = retriever.search(prompt, top_k=TOP_K)
+        bm25_results = retriever.search(retrieval_query, top_k=TOP_K)
         if not bm25_results:
             skipped_retrieval += 1
             continue
@@ -244,14 +249,21 @@ def main():
         bm25_top1 = bm25_results[0]
         locality_top1 = locality_results[0]
 
-        prompt_only_text = build_prompt_only(target_path, prompt)
-        bm25_prompt_text = build_prompt_with_context(target_path, prompt, bm25_top1.text)
-        locality_prompt_text = build_prompt_with_context(target_path, prompt, locality_top1.text)
+        prompt_only_text = build_prompt_only(target_path, generation_prefix)
+        bm25_prompt_text = build_prompt_with_context(target_path, retrieval_query, bm25_top1.text)
+        locality_prompt_text = build_prompt_with_context(target_path, retrieval_query, locality_top1.text)
 
         pred_prompt_only = generate_next_line(model, tokenizer, prompt_only_text, device)
         pred_bm25 = generate_next_line(model, tokenizer, bm25_prompt_text, device)
         pred_locality = generate_next_line(model, tokenizer, locality_prompt_text, device)
 
+        if idx <= 5:
+            print("GOLD:", repr(gold_line))
+            print("PROMPT_ONLY:", repr(pred_prompt_only))
+            print("BM25:", repr(pred_bm25))
+            print("LOCALITY:", repr(pred_locality))
+            print("-" * 80)
+        
         em_prompt_only = exact_match(pred_prompt_only, gold_line)
         em_bm25 = exact_match(pred_bm25, gold_line)
         em_locality = exact_match(pred_locality, gold_line)

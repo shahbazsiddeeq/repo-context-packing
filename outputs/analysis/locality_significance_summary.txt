@@ -1,0 +1,30 @@
+Locality reranking significance and error analysis
+
+Number of examples analyzed: 1600
+
+Aggregate metrics
+- Baseline MRR: 0.7060
+- Reranked MRR: 0.7394
+- Delta MRR: 0.0334
+- Delta MRR 95% bootstrap CI: [0.0267, 0.0404]
+- Delta MRR sign counts: {'positive': 186, 'negative': 40, 'zero': 1374}
+
+- Baseline Recall@1: 0.5831
+- Reranked Recall@1: 0.6206
+- Delta Recall@1: 0.0375
+- Delta Recall@1 95% bootstrap CI: [0.0275, 0.0481]
+- Delta Recall@1 sign counts: {'positive': 67, 'negative': 7, 'zero': 1526}
+
+- Baseline Recall@5: 0.8556
+- Reranked Recall@5: 0.8831
+- Delta Recall@5: 0.0275
+- Delta Recall@5 95% bootstrap CI: [0.0181, 0.0375]
+- Delta Recall@5 sign counts: {'positive': 53, 'negative': 9, 'zero': 1538}
+
+Error analysis buckets
+- Movement counts: {'same_rank': 1225, 'improved_rank': 186, 'still_missed': 149, 'worsened_rank': 40}
+- Path transition counts: {'same_file_to_same_file': 1496, 'other_file_to_same_file': 93, 'other_file_to_other_file': 11}
+- Top1 transition counts: {'r1_same': 1526, 'r1_gain': 67, 'r1_loss': 7}
+- Top5 transition counts: {'r5_same': 1538, 'r5_gain': 53, 'r5_loss': 9}
+
+Detailed per-example buckets saved to: outputs/analysis/locality_error_buckets.csv
