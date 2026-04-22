@@ -73,6 +73,12 @@ def parse_args() -> argparse.Namespace:
         choices=["auto", "always", "never"],
         help="Whether to prepend official cross-file context when present.",
     )
+    parser.add_argument(
+        "--checkpoint_every",
+        type=int,
+        default=int(os.getenv("CHECKPOINT_EVERY", "50")),
+        help="Save a checkpoint CSV every N examples (0 to disable).",
+    )
     return parser.parse_args()
 
 
@@ -83,14 +89,24 @@ def maybe_int(value: str) -> Optional[int]:
     return int(value)
 
 
-def save_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
+def save_csv(path: Path, rows: List[Dict[str, Any]], append: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if not rows:
-        raise RuntimeError(f"No rows to save for {path}")
-    with path.open("w", encoding="utf-8", newline="") as f:
+        return
+    write_header = not append or not path.exists()
+    mode = "a" if append else "w"
+    with path.open(mode, encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
-        writer.writeheader()
+        if write_header:
+            writer.writeheader()
         writer.writerows(rows)
+
+
+def load_checkpoint(path: Path) -> List[Dict[str, Any]]:
+    if not path.exists():
+        return []
+    with path.open("r", encoding="utf-8", newline="") as f:
+        return list(csv.DictReader(f))
 
 
 def save_text(path: Path, text: str) -> None:
@@ -173,27 +189,42 @@ def generate_next_line(
     max_new_tokens: int,
     max_input_tokens: int,
 ) -> str:
-    inputs = tokenizer(
-        prompt_text,
-        return_tensors="pt",
-        truncation=True,
-        max_length=max_input_tokens,
-    )
-    inputs = {k: v.to(device) for k, v in inputs.items()}
+    # OOM fallback: if a long prompt causes OOM, halve the token budget and retry
+    # (down to a minimum of 512 tokens before giving up).
+    budget = max_input_tokens
+    while budget >= 512:
+        try:
+            torch.cuda.empty_cache()
+            inputs = tokenizer(
+                prompt_text,
+                return_tensors="pt",
+                truncation=True,
+                max_length=budget,
+            )
+            inputs = {k: v.to(device) for k, v in inputs.items()}
 
-    output_ids = model.generate(
-        **inputs,
-        max_new_tokens=max_new_tokens,
-        do_sample=False,
-        pad_token_id=tokenizer.eos_token_id,
-        eos_token_id=tokenizer.eos_token_id,
-        use_cache=True,
-    )
+            output_ids = model.generate(
+                **inputs,
+                max_new_tokens=max_new_tokens,
+                do_sample=False,
+                pad_token_id=tokenizer.eos_token_id,
+                eos_token_id=tokenizer.eos_token_id,
+                use_cache=True,
+            )
 
-    prompt_len = inputs["input_ids"].shape[1]
-    generated_ids = output_ids[0][prompt_len:]
-    generated_text = tokenizer.decode(generated_ids, skip_special_tokens=True)
-    return extract_next_line(generated_text)
+            prompt_len = inputs["input_ids"].shape[1]
+            generated_ids = output_ids[0][prompt_len:]
+            generated_text = tokenizer.decode(generated_ids, skip_special_tokens=True)
+            if budget < max_input_tokens:
+                print(f"  [oom-fallback] succeeded at budget={budget}")
+            return extract_next_line(generated_text)
+
+        except torch.cuda.OutOfMemoryError:
+            print(f"  [oom-fallback] OOM at budget={budget}, halving to {budget // 2}")
+            torch.cuda.empty_cache()
+            budget = budget // 2
+
+    raise RuntimeError(f"OOM even at minimum token budget (512). Giving up on this example.")
 
 
 def choose_device() -> torch.device:
@@ -248,6 +279,7 @@ def main() -> None:
     max_rows = maybe_int(args.max_rows)
     output_dir = Path(args.output_dir)
     per_example_csv = output_dir / "crosscodeeval_official_prompts_per_example.csv"
+    checkpoint_csv = output_dir / "crosscodeeval_official_prompts_checkpoint.csv"
     summary_txt = output_dir / "crosscodeeval_official_prompts_summary.txt"
 
     examples = load_crosscodeeval_file(args.input, max_rows=max_rows)
@@ -255,17 +287,27 @@ def main() -> None:
     if not examples:
         raise RuntimeError("No examples loaded.")
 
+    # Resume from checkpoint if present
+    prior_rows = load_checkpoint(checkpoint_csv)
+    done_ids: set = {r["task_id"] for r in prior_rows}
+    if prior_rows:
+        print(f"Resuming from checkpoint: {len(prior_rows)} examples already done, skipping.")
+
     model, tokenizer, device = load_model_and_tokenizer(args.model_name)
     print(f"Loaded model: {args.model_name}")
     print(f"Using device: {device}")
 
-    rows: List[Dict[str, Any]] = []
-    used_examples = 0
-    em_sum = 0
-    used_context_count = 0
+    new_rows: List[Dict[str, Any]] = []
+    used_examples = len(prior_rows)
+    em_sum = sum(int(r["em"]) for r in prior_rows)
+    used_context_count = sum(int(r["used_context"]) for r in prior_rows)
+    pending_checkpoint: List[Dict[str, Any]] = []
 
     for idx, ex in enumerate(examples, start=1):
         task_id = ex["task_id"]
+        if task_id in done_ids:
+            continue
+
         gold_line = ex["ground_truth"]
         prompt = ex["prompt"]
         context_text = ex.get("crossfile_context_text", "")
@@ -302,29 +344,45 @@ def main() -> None:
                 print("TOP1_CONTEXT_SCORE:", repr(top1.get("score", None)))
             print("-" * 80)
 
-        rows.append(
-            {
-                "task_id": ex["task_id"],
-                "repo": ex["repo"],
-                "path": ex["path"],
-                "language": ex["language"],
-                "line_no": ex["line_no"],
-                "gold_line": gold_line,
-                "pred": pred,
-                "em": em,
-                "used_context": int(has_context),
-                "has_crossfile_context_in_file": int(bool(context_text.strip())),
-                "num_context_chunks": len(context_list),
-                "top1_context_file": top1.get("filename", ""),
-                "top1_context_score": top1.get("score", None),
-                "prompt_tail": prompt[-500:],
-            }
-        )
+        row = {
+            "task_id": ex["task_id"],
+            "repo": ex["repo"],
+            "path": ex["path"],
+            "language": ex["language"],
+            "line_no": ex["line_no"],
+            "gold_line": gold_line,
+            "pred": pred,
+            "em": em,
+            "used_context": int(has_context),
+            "has_crossfile_context_in_file": int(bool(context_text.strip())),
+            "num_context_chunks": len(context_list),
+            "top1_context_file": top1.get("filename", ""),
+            "top1_context_score": top1.get("score", None),
+            "prompt_tail": prompt[-500:],
+        }
+        new_rows.append(row)
+        pending_checkpoint.append(row)
+
+        if args.checkpoint_every > 0 and len(pending_checkpoint) >= args.checkpoint_every:
+            save_csv(checkpoint_csv, pending_checkpoint, append=True)
+            print(f"  [checkpoint] saved {used_examples} examples so far")
+            pending_checkpoint = []
+
+    # Flush any remaining rows to checkpoint
+    if pending_checkpoint:
+        save_csv(checkpoint_csv, pending_checkpoint, append=True)
 
     if used_examples == 0:
         raise RuntimeError("No usable examples were evaluated.")
 
-    save_csv(per_example_csv, rows)
+    # Write final CSV combining prior + new rows
+    all_rows = prior_rows + new_rows
+    # Re-cast prior rows' numeric fields (loaded as strings from CSV)
+    for r in all_rows:
+        r["em"] = int(r["em"])
+        r["used_context"] = int(r["used_context"])
+        r["has_crossfile_context_in_file"] = int(r["has_crossfile_context_in_file"])
+    save_csv(per_example_csv, all_rows)
     em = em_sum / used_examples
 
     report: List[str] = []

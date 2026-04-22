@@ -1,0 +1,16 @@
+CrossCodeEval official prompt-file experiment
+
+Input file: cceval/data/python/line_completion_rg1_bm25.jsonl
+Language: python
+Model: bigcode/starcoder2-7b
+Examples requested: 2665
+Usable examples: 2665
+Use cross-file context mode: auto
+Examples with context actually used: 2665
+
+Exact Match (EM): 0.1692
+
+Max new tokens: 32
+Max input tokens: 16000
+Debug first N: 5
+Output dir: /home/shahbaz/repo-context-packing/outputs/cceval_python_hf_bm25_full
