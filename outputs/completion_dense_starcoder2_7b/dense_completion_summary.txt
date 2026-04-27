@@ -1,0 +1,23 @@
+Dense+Locality end-to-end completion (RQ5 extension)
+
+Generation model:  bigcode/starcoder2-7b
+Dense encoder:     microsoft/unixcoder-base
+Prompt style:      raw
+Examples requested:1600
+Usable examples:   1600
+Skipped:           0
+
+Dense EM:          73.88%  (1182/1600)
+Dense+Locality EM: 90.06%  (1441/1600)
+Δ (Dense+Loc - Dense): +16.19 pp
+
+For reference (from previous runs):
+  BM25 EM:          78.19%  (StarCoder2-7B, 1600 examples)
+  BM25+Locality EM: 79.38%  (StarCoder2-7B, 1600 examples)
+
+Chunk size:        120 tokens
+Chunk overlap:     20 tokens
+Top-k:             10
+Same-file bonus β: 150.0
+Line-distance λ:   0.2
+Max input tokens:  4096

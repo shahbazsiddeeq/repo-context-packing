@@ -1,0 +1,25 @@
+RepoEval completion experiment
+
+Model: codellama/CodeLlama-7b-hf
+Examples requested: 1600
+Usable examples: 1600
+Skipped repo: 0
+Skipped files: 0
+Skipped chunks: 0
+Skipped retrieval: 0
+
+Prompt-only EM: 0.3325
+BM25 top-1 context EM: 0.7606
+Locality top-1 context EM: 0.7756
+
+Delta (BM25 - Prompt-only): 0.4281
+Delta (Locality - BM25): 0.0150
+Delta (Locality - Prompt-only): 0.4431
+
+Chunk size: 120
+Chunk overlap: 20
+Top-k retrieval: 10
+Same-file bonus: 150.0
+Line-distance weight: 0.2
+Max input tokens: 4096
+Prompt style: raw

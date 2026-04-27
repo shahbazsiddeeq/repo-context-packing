@@ -3,10 +3,10 @@ from __future__ import annotations
 import argparse
 import csv
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Set
 
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, PreTrainedTokenizerFast
 
 from src.data.load_repoeval import load_repoeval_file
 from src.chunking.fixed_chunker import chunk_record_fixed
@@ -37,6 +37,25 @@ def save_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
+
+
+def load_checkpoint(path: Path):
+    """Load existing rows from CSV checkpoint. Returns (rows, done_task_ids)."""
+    if not path.exists():
+        return [], set()
+    rows = []
+    with path.open("r", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            # restore int columns
+            for col in ("line_no", "em_prompt_only", "em_bm25", "em_locality",
+                        "bm25_top1_start", "bm25_top1_end",
+                        "locality_top1_start", "locality_top1_end"):
+                if col in row:
+                    row[col] = int(row[col])
+            rows.append(row)
+    done_ids: Set[str] = {r["task_id"] for r in rows}
+    return rows, done_ids
 
 
 def save_text(path: Path, text: str) -> None:
@@ -72,10 +91,11 @@ def exact_match(pred: str, gold: str) -> int:
 
 def extract_next_line(generated_text: str) -> str:
     text = generated_text.replace("\r\n", "\n").replace("\r", "\n")
+    text = text.lstrip("\n")
     return text.split("\n", 1)[0].rstrip()
 
 
-def build_prompt_only(target_path: str, prompt: str) -> str:
+def build_prompt_only_instruction(target_path: str, prompt: str) -> str:
     return (
         "### Current File Path\n"
         f"{target_path}\n\n"
@@ -86,7 +106,7 @@ def build_prompt_only(target_path: str, prompt: str) -> str:
     )
 
 
-def build_prompt_with_context(target_path: str, prompt: str, context_text: str) -> str:
+def build_prompt_with_context_instruction(target_path: str, prompt: str, context_text: str) -> str:
     return (
         "### Repository Context\n"
         f"{context_text}\n\n"
@@ -97,6 +117,27 @@ def build_prompt_with_context(target_path: str, prompt: str, context_text: str) 
         "### Task\n"
         "Predict the next line of code only.\n"
     )
+
+
+def build_prompt_only_raw(target_path: str, prompt: str) -> str:
+    # Plain code prefix — for base models that do text continuation (e.g. CodeLlama, DeepSeek base)
+    return f"# {target_path}\n{prompt}"
+
+
+def build_prompt_with_context_raw(target_path: str, prompt: str, context_text: str) -> str:
+    return f"{context_text}\n\n# {target_path}\n{prompt}"
+
+
+def build_prompt_only(target_path: str, prompt: str, style: str) -> str:
+    if style == "raw":
+        return build_prompt_only_raw(target_path, prompt)
+    return build_prompt_only_instruction(target_path, prompt)
+
+
+def build_prompt_with_context(target_path: str, prompt: str, context_text: str, style: str) -> str:
+    if style == "raw":
+        return build_prompt_with_context_raw(target_path, prompt, context_text)
+    return build_prompt_with_context_instruction(target_path, prompt, context_text)
 
 
 @torch.no_grad()
@@ -137,7 +178,13 @@ def choose_device() -> torch.device:
 
 
 def load_model_and_tokenizer(model_name: str):
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    # Some models (e.g. DeepSeek-Coder) ship only tokenizer.json (no tokenizer.model).
+    # AutoTokenizer falls back to the slow LlamaTokenizer which strips all whitespace.
+    # PreTrainedTokenizerFast uses the Rust tokenizers backend and handles whitespace correctly.
+    try:
+        tokenizer = PreTrainedTokenizerFast.from_pretrained(model_name)
+    except Exception:
+        tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
@@ -148,6 +195,7 @@ def load_model_and_tokenizer(model_name: str):
             model_name,
             torch_dtype=torch.float16,
             device_map="auto",
+            attn_implementation="eager",
         )
     elif device.type == "mps":
         model = AutoModelForCausalLM.from_pretrained(
@@ -175,6 +223,18 @@ def parse_args():
         default=4096,
         help="Max tokenizer truncation length (use 4096 for CodeLlama/DeepSeek/CodeQwen)",
     )
+    p.add_argument(
+        "--checkpoint_every",
+        type=int,
+        default=50,
+        help="Save checkpoint CSV every N new examples (default 50)",
+    )
+    p.add_argument(
+        "--prompt_style",
+        choices=["instruction", "raw"],
+        default="instruction",
+        help="'instruction' = markdown headers (StarCoder2); 'raw' = plain code prefix (CodeLlama/DeepSeek base)",
+    )
     return p.parse_args()
 
 
@@ -184,6 +244,8 @@ def main():
     max_rows = args.max_rows
     output_dir = Path(args.output_dir)
     max_input_tokens = args.max_input_tokens
+    checkpoint_every = args.checkpoint_every
+    prompt_style = args.prompt_style
 
     stem = output_dir.name
     per_example_csv = output_dir / f"{stem}_per_example.csv"
@@ -192,22 +254,36 @@ def main():
     examples = load_repoeval_file(REPOEVAL_FILE, max_rows=max_rows)
     print(f"Loaded examples: {len(examples)}")
 
-    model, tokenizer, device = load_model_and_tokenizer(model_name)
-    print(f"Loaded model: {model_name}")
-    print(f"Using device: {device}")
-    print(f"Max input tokens: {max_input_tokens}")
+    # Resume from checkpoint if it exists
+    rows, done_ids = load_checkpoint(per_example_csv)
+    if done_ids:
+        print(f"Resuming from checkpoint: {len(done_ids)} examples already done, skipping them.")
 
-    rows: List[Dict[str, Any]] = []
-    used_examples = 0
+    # Recompute running totals from loaded rows
+    em_prompt_only_sum = sum(int(r["em_prompt_only"]) for r in rows)
+    em_bm25_sum = sum(int(r["em_bm25"]) for r in rows)
+    em_locality_sum = sum(int(r["em_locality"]) for r in rows)
+    used_examples = len(rows)
+
     skipped_repo = 0
     skipped_files = 0
     skipped_chunks = 0
     skipped_retrieval = 0
-    em_prompt_only_sum = 0
-    em_bm25_sum = 0
-    em_locality_sum = 0
+    new_since_checkpoint = 0
+
+    model, tokenizer, device = load_model_and_tokenizer(model_name)
+    print(f"Loaded model: {model_name}")
+    print(f"Using device: {device}")
+    print(f"Max input tokens: {max_input_tokens}")
+    print(f"Checkpoint every: {checkpoint_every} examples")
+    print(f"Prompt style: {prompt_style}")
 
     for idx, ex in enumerate(examples, start=1):
+        task_id = ex["task_id"]
+
+        if task_id in done_ids:
+            continue
+
         repo_name = ex["repo"]
         target_path = ex["path"]
         retrieval_query = ex["query"]
@@ -215,7 +291,7 @@ def main():
         gold_line = ex["ground_truth"]
         target_line = ex["line_no"]
 
-        print(f"[{idx}/{len(examples)}] {ex['task_id']}")
+        print(f"[{idx}/{len(examples)}] {task_id}")
 
         repo_dir = find_repo_dir(repo_name)
         if repo_dir is None:
@@ -253,15 +329,15 @@ def main():
         bm25_top1 = bm25_results[0]
         locality_top1 = locality_results[0]
 
-        prompt_only_text = build_prompt_only(target_path, generation_prefix)
-        bm25_prompt_text = build_prompt_with_context(target_path, retrieval_query, bm25_top1.text)
-        locality_prompt_text = build_prompt_with_context(target_path, retrieval_query, locality_top1.text)
+        prompt_only_text = build_prompt_only(target_path, generation_prefix, prompt_style)
+        bm25_prompt_text = build_prompt_with_context(target_path, retrieval_query, bm25_top1.text, prompt_style)
+        locality_prompt_text = build_prompt_with_context(target_path, retrieval_query, locality_top1.text, prompt_style)
 
         pred_prompt_only = generate_next_line(model, tokenizer, prompt_only_text, device, max_input_tokens)
         pred_bm25 = generate_next_line(model, tokenizer, bm25_prompt_text, device, max_input_tokens)
         pred_locality = generate_next_line(model, tokenizer, locality_prompt_text, device, max_input_tokens)
 
-        if idx <= 5:
+        if used_examples < 5:
             print("GOLD:", repr(gold_line))
             print("PROMPT_ONLY:", repr(pred_prompt_only))
             print("BM25:", repr(pred_bm25))
@@ -276,9 +352,10 @@ def main():
         em_bm25_sum += em_b
         em_locality_sum += em_l
         used_examples += 1
+        new_since_checkpoint += 1
 
         rows.append({
-            "task_id": ex["task_id"],
+            "task_id": task_id,
             "repo": repo_name,
             "path": target_path,
             "line_no": target_line,
@@ -298,6 +375,11 @@ def main():
             "locality_top1_start": locality_top1.metadata.get("start_line", -1),
             "locality_top1_end": locality_top1.metadata.get("end_line", -1),
         })
+
+        if new_since_checkpoint >= checkpoint_every:
+            save_csv(per_example_csv, rows)
+            print(f"  [checkpoint] saved {used_examples} rows to {per_example_csv}")
+            new_since_checkpoint = 0
 
     if used_examples == 0:
         raise RuntimeError("No usable examples were evaluated.")
@@ -333,6 +415,7 @@ def main():
         f"Same-file bonus: {SAME_FILE_BONUS}",
         f"Line-distance weight: {LINE_DISTANCE_WEIGHT}",
         f"Max input tokens: {max_input_tokens}",
+        f"Prompt style: {prompt_style}",
     ]
 
     save_text(summary_txt, "\n".join(report))

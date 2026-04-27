@@ -1,0 +1,165 @@
+[
+  {
+    "model": "StarCoder2-7B",
+    "total": 1600,
+    "wins": 30,
+    "loses": 11,
+    "net": 19,
+    "delta_pp": 1.1875,
+    "wins_by_type": {
+      "other": 7,
+      "return": 1,
+      "control_flow": 3,
+      "assignment": 4,
+      "function_call": 6,
+      "definition": 1,
+      "import": 8
+    },
+    "loses_by_type": {
+      "assignment": 2,
+      "return": 1,
+      "function_call": 3,
+      "other": 4,
+      "control_flow": 1
+    },
+    "all_by_type": {
+      "other": 510,
+      "function_call": 337,
+      "import": 77,
+      "return": 60,
+      "assignment": 449,
+      "definition": 41,
+      "control_flow": 126
+    }
+  },
+  {
+    "model": "StarCoder2-3B",
+    "total": 1600,
+    "wins": 35,
+    "loses": 10,
+    "net": 25,
+    "delta_pp": 1.5625,
+    "wins_by_type": {
+      "other": 11,
+      "return": 1,
+      "control_flow": 3,
+      "function_call": 7,
+      "assignment": 5,
+      "import": 8
+    },
+    "loses_by_type": {
+      "assignment": 2,
+      "return": 1,
+      "function_call": 3,
+      "other": 3,
+      "control_flow": 1
+    },
+    "all_by_type": {
+      "other": 510,
+      "function_call": 337,
+      "import": 77,
+      "return": 60,
+      "assignment": 449,
+      "definition": 41,
+      "control_flow": 126
+    }
+  },
+  {
+    "model": "CodeLlama-7B",
+    "total": 1600,
+    "wins": 34,
+    "loses": 10,
+    "net": 24,
+    "delta_pp": 1.5,
+    "wins_by_type": {
+      "other": 10,
+      "return": 2,
+      "control_flow": 3,
+      "assignment": 3,
+      "function_call": 8,
+      "import": 8
+    },
+    "loses_by_type": {
+      "assignment": 2,
+      "return": 1,
+      "function_call": 3,
+      "other": 3,
+      "control_flow": 1
+    },
+    "all_by_type": {
+      "other": 510,
+      "function_call": 337,
+      "import": 77,
+      "return": 60,
+      "assignment": 449,
+      "definition": 41,
+      "control_flow": 126
+    }
+  },
+  {
+    "model": "DeepSeek-6.7B",
+    "total": 1600,
+    "wins": 37,
+    "loses": 9,
+    "net": 28,
+    "delta_pp": 1.75,
+    "wins_by_type": {
+      "other": 8,
+      "return": 2,
+      "control_flow": 3,
+      "function_call": 10,
+      "assignment": 5,
+      "definition": 1,
+      "import": 8
+    },
+    "loses_by_type": {
+      "return": 1,
+      "function_call": 3,
+      "other": 3,
+      "control_flow": 1,
+      "assignment": 1
+    },
+    "all_by_type": {
+      "other": 510,
+      "function_call": 337,
+      "import": 77,
+      "return": 60,
+      "assignment": 449,
+      "definition": 41,
+      "control_flow": 126
+    }
+  },
+  {
+    "model": "CodeQwen-7B",
+    "total": 1600,
+    "wins": 33,
+    "loses": 11,
+    "net": 22,
+    "delta_pp": 1.375,
+    "wins_by_type": {
+      "function_call": 9,
+      "assignment": 5,
+      "control_flow": 3,
+      "other": 6,
+      "return": 1,
+      "definition": 1,
+      "import": 8
+    },
+    "loses_by_type": {
+      "return": 1,
+      "function_call": 4,
+      "other": 4,
+      "control_flow": 1,
+      "assignment": 1
+    },
+    "all_by_type": {
+      "other": 510,
+      "function_call": 337,
+      "import": 77,
+      "return": 60,
+      "assignment": 449,
+      "definition": 41,
+      "control_flow": 126
+    }
+  }
+]

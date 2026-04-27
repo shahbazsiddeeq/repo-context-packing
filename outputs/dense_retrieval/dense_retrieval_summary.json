@@ -1,0 +1,18 @@
+{
+  "model": "microsoft/unixcoder-base",
+  "max_rows": 1600,
+  "usable": 1600,
+  "skipped": 0,
+  "beta": 150.0,
+  "lambda": 0.2,
+  "Dense": {
+    "MRR": 0.618342,
+    "Recall@1": 0.48625,
+    "Recall@5": 0.7875
+  },
+  "Dense+Locality": {
+    "MRR": 0.771909,
+    "Recall@1": 0.73375,
+    "Recall@5": 0.8225
+  }
+}
