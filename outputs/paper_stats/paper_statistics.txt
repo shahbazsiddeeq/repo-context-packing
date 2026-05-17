@@ -1,0 +1,86 @@
+PAPER STATISTICS
+
+======================================================================
+
+RQ4 — End-to-End EM (5 models)
+
+
+  StarCoder2-7B
+    BM25 vs Prompt-only:
+      EM 34.62% → 78.19%  Δ=+43.57 pp
+      Bootstrap 95% CI [41.06, 46.06] pp
+      McNemar χ²(1)=673.799, p=6.930e-192
+      OR=59.083  (n_wins=709, n_losses=12)
+      Cliff's delta=0.4356
+    Locality vs BM25:
+      EM 78.19% → 79.38%  Δ=+1.19 pp
+      Bootstrap 95% CI [0.44, 2.0] pp
+      McNemar χ²(1)=8.805, p=4.324e-03
+      OR=2.727  (n_wins=30, n_losses=11)
+      Cliff's delta=0.0119
+
+  StarCoder2-3B
+    BM25 vs Prompt-only:
+      EM 33.75% → 77.62%  Δ=+43.87 pp
+      Bootstrap 95% CI [41.37, 46.38] pp
+      McNemar χ²(1)=671.395, p=6.513e-189
+      OR=44.875  (n_wins=718, n_losses=16)
+      Cliff's delta=0.4387
+    Locality vs BM25:
+      EM 77.62% → 79.19%  Δ=+1.57 pp
+      Bootstrap 95% CI [0.75, 2.44] pp
+      McNemar χ²(1)=13.889, p=2.471e-04
+      OR=3.500  (n_wins=35, n_losses=10)
+      Cliff's delta=0.0156
+
+  CodeLlama-7B
+    BM25 vs Prompt-only:
+      EM 33.25% → 76.06%  Δ=+42.81 pp
+      Bootstrap 95% CI [40.25, 45.37] pp
+      McNemar χ²(1)=634.946, p=1.159e-173
+      OR=26.370  (n_wins=712, n_losses=27)
+      Cliff's delta=0.4281
+    Locality vs BM25:
+      EM 76.06% → 77.56%  Δ=+1.50 pp
+      Bootstrap 95% CI [0.69, 2.31] pp
+      McNemar χ²(1)=13.091, p=3.881e-04
+      OR=3.400  (n_wins=34, n_losses=10)
+      Cliff's delta=0.0150
+
+  DeepSeek-Coder-6.7B
+    BM25 vs Prompt-only:
+      EM 35.56% → 76.62%  Δ=+41.06 pp
+      Bootstrap 95% CI [38.44, 43.56] pp
+      McNemar χ²(1)=597.025, p=5.867e-161
+      OR=20.909  (n_wins=690, n_losses=33)
+      Cliff's delta=0.4106
+    Locality vs BM25:
+      EM 76.62% → 78.38%  Δ=+1.76 pp
+      Bootstrap 95% CI [0.94, 2.62] pp
+      McNemar χ²(1)=17.044, p=4.056e-05
+      OR=4.111  (n_wins=37, n_losses=9)
+      Cliff's delta=0.0175
+
+  CodeQwen1.5-7B
+    BM25 vs Prompt-only:
+      EM 40.31% → 78.12%  Δ=+37.81 pp
+      Bootstrap 95% CI [35.25, 40.38] pp
+      McNemar χ²(1)=542.259, p=5.649e-145
+      OR=18.286  (n_wins=640, n_losses=35)
+      Cliff's delta=0.3781
+    Locality vs BM25:
+      EM 78.12% → 79.5%  Δ=+1.38 pp
+      Bootstrap 95% CI [0.56, 2.25] pp
+      McNemar χ²(1)=11.000, p=1.260e-03
+      OR=3.000  (n_wins=33, n_losses=11)
+      Cliff's delta=0.0138
+
+
+RQ5 — Dense EM (StarCoder2-7B, raw prompt)
+
+  Dense+Locality vs Dense:
+    EM 73.88% → 90.06%  Δ=+16.18 pp
+    Bootstrap 95% CI [14.37, 18.0] pp
+    McNemar χ²(1)=243.931, p=2.485e-68
+    OR=33.375  (n_wins=267, n_losses=8)
+    Cliff's delta=0.1619

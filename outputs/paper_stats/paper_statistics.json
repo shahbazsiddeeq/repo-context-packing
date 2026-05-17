@@ -1,0 +1,201 @@
+{
+  "RQ4": {
+    "StarCoder2-7B": {
+      "BM25_vs_PromptOnly": {
+        "comparison": "BM25 vs Prompt-only",
+        "em_a": 34.62,
+        "em_b": 78.19,
+        "delta_pp": 43.57,
+        "ci_95_pp": [
+          41.06,
+          46.06
+        ],
+        "n": 1600,
+        "n_a_wins": 12,
+        "n_b_wins": 709,
+        "chi2_1": 673.7989,
+        "p_exact": 6.929681186627935e-192,
+        "OR": 59.0833,
+        "cliff_delta": 0.4356
+      },
+      "Locality_vs_BM25": {
+        "comparison": "Locality vs BM25",
+        "em_a": 78.19,
+        "em_b": 79.38,
+        "delta_pp": 1.19,
+        "ci_95_pp": [
+          0.44,
+          2.0
+        ],
+        "n": 1600,
+        "n_a_wins": 11,
+        "n_b_wins": 30,
+        "chi2_1": 8.8049,
+        "p_exact": 0.00432400493446039,
+        "OR": 2.7273,
+        "cliff_delta": 0.0119
+      }
+    },
+    "StarCoder2-3B": {
+      "BM25_vs_PromptOnly": {
+        "comparison": "BM25 vs Prompt-only",
+        "em_a": 33.75,
+        "em_b": 77.62,
+        "delta_pp": 43.87,
+        "ci_95_pp": [
+          41.37,
+          46.38
+        ],
+        "n": 1600,
+        "n_a_wins": 16,
+        "n_b_wins": 718,
+        "chi2_1": 671.3951,
+        "p_exact": 6.513026590534914e-189,
+        "OR": 44.875,
+        "cliff_delta": 0.4387
+      },
+      "Locality_vs_BM25": {
+        "comparison": "Locality vs BM25",
+        "em_a": 77.62,
+        "em_b": 79.19,
+        "delta_pp": 1.57,
+        "ci_95_pp": [
+          0.75,
+          2.44
+        ],
+        "n": 1600,
+        "n_a_wins": 10,
+        "n_b_wins": 35,
+        "chi2_1": 13.8889,
+        "p_exact": 0.00024708778460080794,
+        "OR": 3.5,
+        "cliff_delta": 0.0156
+      }
+    },
+    "CodeLlama-7B": {
+      "BM25_vs_PromptOnly": {
+        "comparison": "BM25 vs Prompt-only",
+        "em_a": 33.25,
+        "em_b": 76.06,
+        "delta_pp": 42.81,
+        "ci_95_pp": [
+          40.25,
+          45.37
+        ],
+        "n": 1600,
+        "n_a_wins": 27,
+        "n_b_wins": 712,
+        "chi2_1": 634.9459,
+        "p_exact": 1.159401721665303e-173,
+        "OR": 26.3704,
+        "cliff_delta": 0.4281
+      },
+      "Locality_vs_BM25": {
+        "comparison": "Locality vs BM25",
+        "em_a": 76.06,
+        "em_b": 77.56,
+        "delta_pp": 1.5,
+        "ci_95_pp": [
+          0.69,
+          2.31
+        ],
+        "n": 1600,
+        "n_a_wins": 10,
+        "n_b_wins": 34,
+        "chi2_1": 13.0909,
+        "p_exact": 0.00038813090293388086,
+        "OR": 3.4,
+        "cliff_delta": 0.015
+      }
+    },
+    "DeepSeek-Coder-6.7B": {
+      "BM25_vs_PromptOnly": {
+        "comparison": "BM25 vs Prompt-only",
+        "em_a": 35.56,
+        "em_b": 76.62,
+        "delta_pp": 41.06,
+        "ci_95_pp": [
+          38.44,
+          43.56
+        ],
+        "n": 1600,
+        "n_a_wins": 33,
+        "n_b_wins": 690,
+        "chi2_1": 597.0249,
+        "p_exact": 5.866995136381638e-161,
+        "OR": 20.9091,
+        "cliff_delta": 0.4106
+      },
+      "Locality_vs_BM25": {
+        "comparison": "Locality vs BM25",
+        "em_a": 76.62,
+        "em_b": 78.38,
+        "delta_pp": 1.76,
+        "ci_95_pp": [
+          0.94,
+          2.62
+        ],
+        "n": 1600,
+        "n_a_wins": 9,
+        "n_b_wins": 37,
+        "chi2_1": 17.0435,
+        "p_exact": 4.0560361327379724e-05,
+        "OR": 4.1111,
+        "cliff_delta": 0.0175
+      }
+    },
+    "CodeQwen1.5-7B": {
+      "BM25_vs_PromptOnly": {
+        "comparison": "BM25 vs Prompt-only",
+        "em_a": 40.31,
+        "em_b": 78.12,
+        "delta_pp": 37.81,
+        "ci_95_pp": [
+          35.25,
+          40.38
+        ],
+        "n": 1600,
+        "n_a_wins": 35,
+        "n_b_wins": 640,
+        "chi2_1": 542.2593,
+        "p_exact": 5.649469614613715e-145,
+        "OR": 18.2857,
+        "cliff_delta": 0.3781
+      },
+      "Locality_vs_BM25": {
+        "comparison": "Locality vs BM25",
+        "em_a": 78.12,
+        "em_b": 79.5,
+        "delta_pp": 1.38,
+        "ci_95_pp": [
+          0.56,
+          2.25
+        ],
+        "n": 1600,
+        "n_a_wins": 11,
+        "n_b_wins": 33,
+        "chi2_1": 11.0,
+        "p_exact": 0.0012600338162656044,
+        "OR": 3.0,
+        "cliff_delta": 0.0138
+      }
+    }
+  },
+  "RQ5_dense_EM": {
+    "comparison": "Dense+Locality vs Dense",
+    "em_a": 73.88,
+    "em_b": 90.06,
+    "delta_pp": 16.18,
+    "ci_95_pp": [
+      14.37,
+      18.0
+    ],
+    "n": 1600,
+    "n_a_wins": 8,
+    "n_b_wins": 267,
+    "chi2_1": 243.9309,
+    "p_exact": 2.4854484000079826e-68,
+    "OR": 33.375,
+    "cliff_delta": 0.1619
+  }
+}
