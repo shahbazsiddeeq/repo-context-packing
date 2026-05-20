@@ -1,5 +1,5 @@
 """
-Compute all missing statistics for the paper:
+Compute statistics from experimental outputs:
   - McNemar exact test (p-value + chi2 statistic) for all pairwise comparisons
   - Odds ratio (OR = n_B_wins / n_A_wins) as effect size
   - Cliff's delta for binary outcomes
