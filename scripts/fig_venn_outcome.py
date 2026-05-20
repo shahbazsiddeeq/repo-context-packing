@@ -55,10 +55,10 @@ cx_loc  =  0.26
 cy      = 0.0
 
 # ── Figure ────────────────────────────────────────────────────────────────────
-fig, ax = plt.subplots(figsize=(8, 5.5))
+fig, ax = plt.subplots(figsize=(8, 7.0))
 ax.set_aspect("equal")
 ax.set_xlim(-1.05, 1.05)
-ax.set_ylim(-0.88, 0.88)
+ax.set_ylim(-1.00, 1.15)
 ax.axis("off")
 
 # Draw circles
@@ -72,44 +72,44 @@ ax.add_patch(circle_bm25)
 ax.add_patch(circle_loc)
 
 # ── Circle title labels (above circles) ──────────────────────────────────────
-ax.text(cx_bm25 - 0.10, cy + r_bm25 + 0.06,
+ax.text(cx_bm25 - 0.10, cy + r_bm25 + 0.18,
         f"BM25 correct\nn = {bm25_total:,}",
         ha="center", va="bottom", fontsize=10.5, fontweight="bold",
         color="#1f4e9e")
-ax.text(cx_loc + 0.10, cy + r_loc + 0.06,
+ax.text(cx_loc + 0.10, cy + r_loc + 0.18,
         f"Locality correct\nn = {local_total:,}",
         ha="center", va="bottom", fontsize=10.5, fontweight="bold",
         color="#a84500")
 
 # ── Region labels ─────────────────────────────────────────────────────────────
 # BM25-only region: x = cx_bm25 - (r - overlap/2) ≈ -0.63
-x_bm25only = cx_bm25 - 0.37
-ax.text(x_bm25only, cy + 0.07, f"{bm25_only}",
+x_bm25only = cx_bm25 - 0.24
+ax.text(x_bm25only, cy + 0.10, f"{bm25_only}",
         ha="center", va="center", fontsize=22, fontweight="bold", color="#1f4e9e")
 ax.text(x_bm25only, cy - 0.11, "BM25 only",
         ha="center", va="center", fontsize=8.5, color="#1f4e9e", style="italic")
-ax.text(x_bm25only, cy - 0.22, "(regressions)",
+ax.text(x_bm25only, cy - 0.20, "(regressions)",
         ha="center", va="center", fontsize=8, color="#1f4e9e", style="italic")
-ax.text(x_bm25only, cy - 0.33, f"({bm25_only/total*100:.2f}%)",
+ax.text(x_bm25only, cy - 0.29, f"({bm25_only/total*100:.2f}%)",
         ha="center", va="center", fontsize=8, color="#555")
 
 # Shared region: centre x = 0
-ax.text(0, cy + 0.09, f"{shared:,}",
+ax.text(0, cy + 0.10, f"{shared:,}",
         ha="center", va="center", fontsize=22, fontweight="bold", color="#333")
-ax.text(0, cy - 0.10, "Both correct",
+ax.text(0, cy - 0.14, "Both correct",
         ha="center", va="center", fontsize=9, color="#444")
-ax.text(0, cy - 0.22, f"({shared/total*100:.1f}%)",
+ax.text(0, cy - 0.27, f"({shared/total*100:.1f}%)",
         ha="center", va="center", fontsize=8.5, color="#555")
 
 # Locality-only region: x = cx_loc + (r - overlap/2) ≈ +0.63
-x_loconly = cx_loc + 0.37
-ax.text(x_loconly, cy + 0.07, f"{local_only}",
+x_loconly = cx_loc + 0.24
+ax.text(x_loconly, cy + 0.10, f"{local_only}",
         ha="center", va="center", fontsize=22, fontweight="bold", color="#a84500")
 ax.text(x_loconly, cy - 0.11, "Locality only",
         ha="center", va="center", fontsize=8.5, color="#a84500", style="italic")
-ax.text(x_loconly, cy - 0.22, "(gains)",
+ax.text(x_loconly, cy - 0.20, "(gains)",
         ha="center", va="center", fontsize=8, color="#a84500", style="italic")
-ax.text(x_loconly, cy - 0.33, f"({local_only/total*100:.2f}%)",
+ax.text(x_loconly, cy - 0.29, f"({local_only/total*100:.2f}%)",
         ha="center", va="center", fontsize=8, color="#555")
 
 # ── "Neither" box (outside both circles) ────────────────────────────────────
@@ -124,7 +124,7 @@ net = local_only - bm25_only   # 30 - 11 = 19
 ax.annotate(
     f"Net gain: +{net} instances\n(+{net/total*100:.2f} pp EM)",
     xy=(x_loconly, cy + 0.14),
-    xytext=(0.72, 0.60),
+    xytext=(0.72, 0.88),
     xycoords="data", textcoords="data",
     fontsize=9.5, color="#a84500", fontweight="bold", ha="center",
     arrowprops=dict(arrowstyle="-|>", color="#a84500", lw=1.3,
@@ -135,7 +135,7 @@ ax.annotate(
 ax.annotate(
     f"Regression rate:\n{bm25_only}/{bm25_total} = {bm25_only/bm25_total*100:.1f}%",
     xy=(x_bm25only, cy + 0.14),
-    xytext=(-0.72, 0.60),
+    xytext=(-0.72, 0.88),
     xycoords="data", textcoords="data",
     fontsize=9, color="#1f4e9e", ha="center",
     arrowprops=dict(arrowstyle="-|>", color="#1f4e9e", lw=1.3,

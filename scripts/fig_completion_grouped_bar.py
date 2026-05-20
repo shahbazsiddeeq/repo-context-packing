@@ -61,10 +61,10 @@ n_models = len(models)
 x        = np.arange(n_models)
 width    = 0.24
 
-# Colors: prompt-only (gray), BM25 (steel blue), Locality (coral/orange)
+# Colors: prompt-only (gray), BM25 (light steel blue), Locality (light green)
 C_PROMPT = "#adb5bd"   # neutral gray
-C_BM25   = "#4c72b0"   # steel blue
-C_LOCAL  = "#dd8452"   # warm orange (our method)
+C_BM25   = "#4393c3"   # medium blue
+C_LOCAL  = "#74c476"   # medium green (our method)
 
 # ── Two-panel figure: left = full range, right = zoomed BM25 vs. Locality ────
 fig, (ax, ax_in) = plt.subplots(
@@ -90,7 +90,7 @@ for i, (bar, d) in enumerate(zip(b3, deltas)):
     ax.text(bar.get_x() + bar.get_width() / 2,
             bar.get_height() + err_hi[i] + 0.6,
             f"+{d:.2f}pp", ha="center", va="bottom",
-            fontsize=8, color=C_LOCAL, fontweight="bold")
+            fontsize=8, color="#2d6a2d", fontweight="bold")
 
 # Prompt-only value labels
 for bar, v in zip(b1, em_prompt):
@@ -109,8 +109,7 @@ ax.set_axisbelow(True)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.set_title("(a) Full range: Prompt-only vs. BM25 vs. Locality", fontsize=10, pad=8)
-ax.legend(loc="upper left", fontsize=8.5, framealpha=0.9, ncol=1,
-          bbox_to_anchor=(0.0, 0.99))
+ax.legend(loc="lower right", fontsize=8.5, framealpha=0.9, ncol=1)
 
 # ── RIGHT PANEL: zoomed BM25 vs. Locality only ───────────────────────────────
 inset_width = 0.32
@@ -139,7 +138,7 @@ for i, d in enumerate(deltas):
     ax_in.text(i + inset_width/2,
                em_local[i] + err_hi[i] + 0.2,
                f"+{d:.2f}pp", ha="center", va="bottom",
-               fontsize=7.5, color=C_LOCAL, fontweight="bold")
+               fontsize=7.5, color="#2d6a2d", fontweight="bold")
 
 # Legend for right panel
 patch_bm25  = mpatches.Patch(color=C_BM25,  label="BM25 top-1")

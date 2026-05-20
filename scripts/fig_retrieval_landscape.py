@@ -155,9 +155,12 @@ p_dense_base = mpatches.Patch(color="#f5a9a9", label="Dense backend (baseline)")
 p_dense_ours = mpatches.Patch(color="#d62728", label="Dense + Locality ★ (ours)")
 
 # Metric hatch legend
-p_mrr  = mpatches.Patch(color="#ccc", hatch="",   label="MRR (value labelled)")
-p_r1   = mpatches.Patch(color="#ccc", hatch="//", label="Recall@1")
-p_r5   = mpatches.Patch(color="#ccc", hatch="..", label="Recall@5")
+p_mrr  = mpatches.Patch(facecolor="#bbbbbb", edgecolor="#444", linewidth=0.8,
+                         hatch="",   label="MRR (value labelled)")
+p_r1   = mpatches.Patch(facecolor="#bbbbbb", edgecolor="#444", linewidth=0.8,
+                         hatch="//", label="Recall@1")
+p_r5   = mpatches.Patch(facecolor="#bbbbbb", edgecolor="#444", linewidth=0.8,
+                         hatch="..", label="Recall@5")
 
 leg1 = ax.legend(handles=[p_bm25_base, p_bm25_ours, p_dense_base, p_dense_ours],
                  loc="lower right", fontsize=8.5, framealpha=0.92,
@@ -167,7 +170,7 @@ ax.add_artist(leg1)
 ax.legend(handles=[p_mrr, p_r1, p_r5],
           loc="lower right", fontsize=8.5, framealpha=0.92,
           title="Metric (bar pattern)", title_fontsize=8.5,
-          bbox_to_anchor=(1.0, 0.38))
+          bbox_to_anchor=(0.62, 0.0))
 
 # ── Title ─────────────────────────────────────────────────────────────────────
 ax.set_title(
