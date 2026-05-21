@@ -4,10 +4,12 @@ import csv
 from pathlib import Path
 from typing import List, Dict, Any
 
+REPO_ROOT  = Path(__file__).resolve().parent.parent
+PAPER_DIR  = REPO_ROOT.parent / "repo-context-packing-paper" / "paper"
 
-SUMMARY_CSV = Path("outputs/tables/repoeval_locality_summary.csv")
-TABLE1_OUT = Path("paper/table1_main_result.md")
-TABLE2_OUT = Path("paper/table2_chunking_comparison.md")
+SUMMARY_CSV = REPO_ROOT / "outputs" / "tables" / "repoeval_locality_summary.csv"
+TABLE1_OUT  = PAPER_DIR / "table1_main_result.md"
+TABLE2_OUT  = PAPER_DIR / "table2_chunking_comparison.md"
 
 
 def read_csv(path: Path) -> List[Dict[str, Any]]:

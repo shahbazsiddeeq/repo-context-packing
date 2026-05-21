@@ -21,10 +21,11 @@ from matplotlib.colors import Normalize
 from matplotlib.cm import ScalarMappable
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO_ROOT  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PAPER_DIR  = os.path.join(os.path.dirname(REPO_ROOT), "repo-context-packing-paper", "paper")
 DATA_PATH = os.path.join(REPO_ROOT, "outputs", "ablation_beta_lambda",
                          "ablation_results.csv")
-OUT_DIR   = os.path.join(REPO_ROOT, "paper", "figures")
+OUT_DIR   = os.path.join(PAPER_DIR, "figures")
 OUT_PDF   = os.path.join(OUT_DIR, "fig_ablation_heatmap.pdf")
 OUT_PNG   = os.path.join(OUT_DIR, "fig_ablation_heatmap.png")
 
