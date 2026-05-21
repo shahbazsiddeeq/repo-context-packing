@@ -22,7 +22,7 @@ from matplotlib.cm import ScalarMappable
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 REPO_ROOT  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAPER_DIR  = os.path.join(os.path.dirname(REPO_ROOT), "repo-context-packing-paper", "paper")
+PAPER_DIR  = os.path.join(os.path.dirname(REPO_ROOT), "paper")
 DATA_PATH = os.path.join(REPO_ROOT, "outputs", "ablation_beta_lambda",
                          "ablation_results.csv")
 OUT_DIR   = os.path.join(PAPER_DIR, "figures")

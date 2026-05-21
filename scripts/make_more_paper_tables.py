@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 REPO_ROOT  = Path(__file__).resolve().parent.parent
-PAPER_DIR  = REPO_ROOT.parent / "repo-context-packing-paper" / "paper"
+PAPER_DIR  = REPO_ROOT.parent / "paper"
 
 TABLE3_OUT = PAPER_DIR / "table3_structure_chunk_size_sweep.md"
 TABLE4_OUT = PAPER_DIR / "table4_packing_comparison.md"

@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List, Dict, Any
 
 REPO_ROOT      = Path(__file__).resolve().parent.parent
-PAPER_DIR      = REPO_ROOT.parent / "repo-context-packing-paper" / "paper"
+PAPER_DIR      = REPO_ROOT.parent / "paper"
 
 FULL_SUMMARY_CSV = REPO_ROOT / "outputs" / "full_run" / "repoeval_full_locality_summary.csv"
 ANALYSIS_TXT     = REPO_ROOT / "outputs" / "analysis" / "locality_significance_summary.txt"

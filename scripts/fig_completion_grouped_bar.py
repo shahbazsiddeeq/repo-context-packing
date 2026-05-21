@@ -24,7 +24,7 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 REPO_ROOT  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAPER_DIR  = os.path.join(os.path.dirname(REPO_ROOT), "repo-context-packing-paper", "paper")
+PAPER_DIR  = os.path.join(os.path.dirname(REPO_ROOT), "paper")
 OUT_DIR    = os.path.join(PAPER_DIR, "figures")
 OUT_PDF   = os.path.join(OUT_DIR, "fig_completion_grouped_bar.pdf")
 OUT_PNG   = os.path.join(OUT_DIR, "fig_completion_grouped_bar.png")
