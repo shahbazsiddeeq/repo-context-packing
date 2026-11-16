@@ -49,7 +49,13 @@ def load_python_files_from_repo(
     repo_dir: Path,
     max_files: int = 200,
     required_path: str | None = None,
+    truncate_line: int | None = None,
 ) -> List[Dict[str, Any]]:
+    # truncate_line: 0-based index of the completion (reference) line in the
+    # target file. When set, the target file (required_path) is cut to the lines
+    # strictly before that line before it enters the retrieval pool. This removes
+    # the reference line and everything after it from same-file chunks, which
+    # otherwise leaks the answer into the retrieved context.
     py_files = sorted(repo_dir.rglob("*.py"))
 
     # Always include the target file first if provided
@@ -83,6 +89,14 @@ def load_python_files_from_repo(
             continue
 
         rel_path = str(fpath.relative_to(repo_dir))
+
+        if (
+            truncate_line is not None
+            and required_abs is not None
+            and fpath.resolve() == required_abs
+        ):
+            code = "\n".join(code.splitlines()[:truncate_line])
+
         records.append(
             {
                 "repo": repo_dir.name,

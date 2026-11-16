@@ -302,6 +302,7 @@ def main():
             repo_dir,
             max_files=MAX_FILES_PER_REPO,
             required_path=target_path,
+            truncate_line=target_line,
         )
         if not repo_records:
             skipped_files += 1
