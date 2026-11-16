@@ -24,7 +24,7 @@ contains the reference line or any later line. All other files are indexed in fu
 
 ## Results
 
-### Truncated-index evaluation (Sections 5.2 and 5.3)
+### Evaluation (Section 5)
 
 StarCoder2-7B, all 1,600 RepoEval line-level instances, RepoCoder prompt format
 (retrieved chunk as commented lines before the prefix), top-1 context.
@@ -42,17 +42,6 @@ StarCoder2-7B, all 1,600 RepoEval line-level instances, RepoCoder prompt format
 - Cross-file vs. prompt-only: +10.44 pp, 190 gains / 23 losses.
 
 Full statistics: `outputs/CR_clean_merged/clean_run_stats.json`.
-
-### Exposure analysis of the untruncated-index runs (Section 5.1)
-
-| | Count |
-|---|---|
-| BM25 top-1 chunk contains the reference line | 1,081 / 1,600 |
-| Locality top-1 chunk contains the reference line | 1,179 / 1,600 |
-| Locality gains (5 models pooled) where reranking newly exposed the reference line | 163 / 169 |
-| Locality gains / losses where neither top-1 chunk contains it (5 models pooled) | 6 / 51 |
-
-Per-model values: `outputs/leakage_analysis/leakage_analysis.json`.
 
 ---
 
@@ -72,7 +61,7 @@ Set `PYTHONPATH` to the repository root before running any script.
 
 ## Reproducing the paper
 
-### Clean run (truncated index, five conditions; GPU with ~24 GB)
+### Five-condition run (GPU with ~24 GB)
 
 ```bash
 bash scripts/run_camera_ready_clean.sh            # all 1,600 instances
@@ -87,7 +76,6 @@ The runner checkpoints every 50 instances and resumes if restarted.
 
 ```bash
 python scripts/analyze_clean_run.py outputs/CR_clean_merged/CR_clean_merged_per_example.csv
-python scripts/analyze_leakage.py
 ```
 
 ### CrossCodeEval (appendix; uses the benchmark's own cross-file retrieval files)
@@ -108,26 +96,14 @@ python scripts/run_crosscodeeval_official_prompts.py
 
 ## Pre-computed outputs
 
-### Truncated-index runs (Sections 5.2 and 5.3)
+### RepoEval runs (Section 5)
 
 | Directory | Contents |
 |---|---|
 | `outputs/CR_clean_merged/` | All 1,600 instances, five conditions, and `clean_run_stats.json` |
 | `outputs/CR_clean_repocoder_starcoder2_7b_1600/` | Instances 0–799 |
 | `outputs/CR_clean_repocoder_starcoder2_7b_1600_part2/` | Instances 800–1599 |
-| `outputs/clean_completion_starcoder2_7b_1600/` | Run with an uncommented prompt format (prompt-format check, Section 7) |
-
-### Untruncated-index runs (Section 5.1)
-
-| Directory | Contents |
-|---|---|
-| `outputs/completion_step1_1600/` | StarCoder2-7B |
-| `outputs/completion_starcoder2_3b_1600/` | StarCoder2-3B |
-| `outputs/completion_codellama_7b_1600/` | CodeLlama-7B |
-| `outputs/completion_deepseek_6b_1600/` | DeepSeek-Coder-6.7B |
-| `outputs/completion_codeqwen_7b_1600/` | CodeQwen1.5-7B |
-| `outputs/completion_dense_starcoder2_7b/` | StarCoder2-7B, UniXcoder dense retrieval |
-| `outputs/leakage_analysis/` | Exposure analysis computed from these runs |
+| `outputs/clean_completion_starcoder2_7b_1600/` | Pilot with an uncommented prompt format (Section 7) |
 
 ### CrossCodeEval (Appendix)
 
