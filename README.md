@@ -161,3 +161,8 @@ outputs/            pre-computed per-instance results
 
 Only needed for the API-based runner: copy `.env.example` to `.env` and fill in
 `STARCODER_API_URL`, `STARCODER_API_KEY`, `API_MODEL_NAME`.
+
+## License
+
+Code in this repository is released under the [MIT License](LICENSE). The RepoEval and
+CrossCodeEval benchmark data are not redistributed here and remain under their own licenses.
