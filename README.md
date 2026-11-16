@@ -76,7 +76,7 @@ The runner checkpoints every 50 instances and resumes if restarted.
 
 ```bash
 python scripts/analyze_clean_run.py outputs/CR_clean_merged/CR_clean_merged_per_example.csv
-python scripts/fig_clean_results.py outputs/CR_clean_merged/CR_clean_merged_per_example.csv figures/   # Figs. 2 and 3
+python scripts/fig_clean_results.py outputs/CR_clean_merged/CR_clean_merged_per_example.csv figures/   # Figs. 2-6
 ```
 
 ### CrossCodeEval (Section 5.1; uses the benchmark's own cross-file retrieval files)
