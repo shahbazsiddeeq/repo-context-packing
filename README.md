@@ -1,6 +1,6 @@
-# Locality-Aware Reranking for Repository-Level Code Completion: Target-File Leakage and a Clean Re-Evaluation
+# Locality-Aware Reranking for Repository-Level Code Completion
 
-Replication package for the paper of the same title (Computing 2027).
+Replication package for the Computing 2027 paper on locality-aware reranking for repository-level code completion.
 
 > **Important.** Earlier versions of this repository reported exact-match and MRR gains
 > for locality-aware reranking. Those runs built the retrieval index from the **full**
