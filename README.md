@@ -2,13 +2,6 @@
 
 Replication package for the Computing 2027 paper on locality-aware reranking for repository-level code completion.
 
-> **Important.** Earlier versions of this repository reported exact-match and MRR gains
-> for locality-aware reranking. Those runs built the retrieval index from the **full**
-> target file, so a same-file chunk could contain the reference line. Those gains are
-> leakage artifacts (fix: commit "Fix RepoEval answer leakage: truncate target file at
-> completion point"). The outputs of those runs are kept for the leakage analysis and
-> are labelled **untruncated** below. They must not be read as evidence that the method works.
-
 ## Method
 
 For each retrieved chunk `c`, the reranked score is
