@@ -165,4 +165,5 @@ Only needed for the API-based runner: copy `.env.example` to `.env` and fill in
 ## License
 
 Code in this repository is released under the [MIT License](LICENSE). The RepoEval and
-CrossCodeEval benchmark data are not redistributed here and remain under their own licenses.
+CrossCodeEval datasets are not included. The per-instance output files contain excerpts
+from them (reference lines and retrieved code), which remain under the benchmarks' own licenses.
