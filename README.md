@@ -76,9 +76,10 @@ The runner checkpoints every 50 instances and resumes if restarted.
 
 ```bash
 python scripts/analyze_clean_run.py outputs/CR_clean_merged/CR_clean_merged_per_example.csv
+python scripts/fig_clean_results.py outputs/CR_clean_merged/CR_clean_merged_per_example.csv figures/   # Figs. 2 and 3
 ```
 
-### CrossCodeEval (appendix; uses the benchmark's own cross-file retrieval files)
+### CrossCodeEval (Section 5.1; uses the benchmark's own cross-file retrieval files)
 
 ```bash
 python scripts/run_crosscodeeval_official_prompts.py
@@ -105,7 +106,7 @@ python scripts/run_crosscodeeval_official_prompts.py
 | `outputs/CR_clean_repocoder_starcoder2_7b_1600_part2/` | Instances 800–1599 |
 | `outputs/clean_completion_starcoder2_7b_1600/` | Pilot with an uncommented prompt format (Section 7) |
 
-### CrossCodeEval (Appendix)
+### CrossCodeEval (Section 5.1)
 
 | Directory | Contents |
 |---|---|
