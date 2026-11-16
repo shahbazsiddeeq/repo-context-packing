@@ -1,0 +1,273 @@
+{
+  "n": 1600,
+  "em": {
+    "prompt_only": 34.625,
+    "bm25": 30.25,
+    "locality": 29.3125,
+    "nearest": 28.875,
+    "crossfile": 45.0625
+  },
+  "paired": {
+    "bm25_vs_prompt_only": {
+      "n": 1600,
+      "em_a": 30.25,
+      "em_b": 34.625,
+      "delta_pp": -4.375,
+      "ci_pp": [
+        -5.875,
+        -2.875
+      ],
+      "gains": 43,
+      "losses": 113,
+      "mcnemar_p": 1.9274585603612783e-08
+    },
+    "locality_vs_prompt_only": {
+      "n": 1600,
+      "em_a": 29.3125,
+      "em_b": 34.625,
+      "delta_pp": -5.3125,
+      "ci_pp": [
+        -6.812500000000001,
+        -3.8125
+      ],
+      "gains": 32,
+      "losses": 117,
+      "mcnemar_p": 1.3948558841961195e-12
+    },
+    "nearest_vs_prompt_only": {
+      "n": 1600,
+      "em_a": 28.875,
+      "em_b": 34.625,
+      "delta_pp": -5.75,
+      "ci_pp": [
+        -7.3125,
+        -4.1875
+      ],
+      "gains": 38,
+      "losses": 130,
+      "mcnemar_p": 5.593404540671204e-13
+    },
+    "crossfile_vs_prompt_only": {
+      "n": 1600,
+      "em_a": 45.0625,
+      "em_b": 34.625,
+      "delta_pp": 10.4375,
+      "ci_pp": [
+        8.75,
+        12.1875
+      ],
+      "gains": 190,
+      "losses": 23,
+      "mcnemar_p": 6.953017068842084e-34
+    },
+    "locality_vs_bm25": {
+      "n": 1600,
+      "em_a": 29.3125,
+      "em_b": 30.25,
+      "delta_pp": -0.9375,
+      "ci_pp": [
+        -1.5,
+        -0.43750000000000006
+      ],
+      "gains": 2,
+      "losses": 17,
+      "mcnemar_p": 0.000728607177734375
+    },
+    "locality_vs_nearest": {
+      "n": 1600,
+      "em_a": 29.3125,
+      "em_b": 28.875,
+      "delta_pp": 0.4375,
+      "ci_pp": [
+        -0.1875,
+        1.125
+      ],
+      "gains": 18,
+      "losses": 11,
+      "mcnemar_p": 0.26493089646101
+    },
+    "crossfile_vs_bm25": {
+      "n": 1600,
+      "em_a": 45.0625,
+      "em_b": 30.25,
+      "delta_pp": 14.8125,
+      "ci_pp": [
+        12.812499999999998,
+        16.75
+      ],
+      "gains": 264,
+      "losses": 27,
+      "mcnemar_p": 4.958685573905814e-50
+    }
+  },
+  "exposed_bm25": 0,
+  "exposed_locality": 0,
+  "locality_equals_nearest": 1284,
+  "bm25_equals_nearest": 1242,
+  "crossfile_found": 1600,
+  "pred_is_comment_line": {
+    "prompt_only": 24,
+    "bm25": 56,
+    "locality": 57,
+    "nearest": 57,
+    "crossfile": 16
+  },
+  "strata": {
+    "bm25_top1_same_file": {
+      "n": 1542,
+      "em": {
+        "prompt_only": 33.98184176394293,
+        "bm25": 28.79377431906615,
+        "locality": 28.79377431906615,
+        "nearest": 28.404669260700388,
+        "crossfile": 44.16342412451362
+      },
+      "locality_vs_bm25": {
+        "n": 1542,
+        "em_a": 28.79377431906615,
+        "em_b": 28.79377431906615,
+        "delta_pp": 0.0,
+        "ci_pp": [
+          0.0,
+          0.0
+        ],
+        "gains": 0,
+        "losses": 0,
+        "mcnemar_p": 1.0
+      },
+      "bm25_vs_prompt_only": {
+        "n": 1542,
+        "em_a": 28.79377431906615,
+        "em_b": 33.98184176394293,
+        "delta_pp": -5.188067444876784,
+        "ci_pp": [
+          -6.679636835278859,
+          -3.6964980544747084
+        ],
+        "gains": 31,
+        "losses": 111,
+        "mcnemar_p": 9.170379890439553e-12
+      },
+      "crossfile_vs_prompt_only": {
+        "n": 1542,
+        "em_a": 44.16342412451362,
+        "em_b": 33.98184176394293,
+        "delta_pp": 10.181582360570687,
+        "ci_pp": [
+          8.430609597924773,
+          11.932555123216602
+        ],
+        "gains": 178,
+        "losses": 21,
+        "mcnemar_p": 3.4876005476512224e-32
+      }
+    },
+    "bm25_top1_cross_file": {
+      "n": 58,
+      "em": {
+        "prompt_only": 51.724137931034484,
+        "bm25": 68.96551724137932,
+        "locality": 43.10344827586207,
+        "nearest": 41.37931034482759,
+        "crossfile": 68.96551724137932
+      },
+      "locality_vs_bm25": {
+        "n": 58,
+        "em_a": 43.10344827586207,
+        "em_b": 68.96551724137932,
+        "delta_pp": -25.862068965517242,
+        "ci_pp": [
+          -39.6551724137931,
+          -12.068965517241379
+        ],
+        "gains": 2,
+        "losses": 17,
+        "mcnemar_p": 0.000728607177734375
+      },
+      "bm25_vs_prompt_only": {
+        "n": 58,
+        "em_a": 68.96551724137932,
+        "em_b": 51.724137931034484,
+        "delta_pp": 17.24137931034483,
+        "ci_pp": [
+          5.172413793103448,
+          29.310344827586203
+        ],
+        "gains": 12,
+        "losses": 2,
+        "mcnemar_p": 0.012939453125
+      },
+      "crossfile_vs_prompt_only": {
+        "n": 58,
+        "em_a": 68.96551724137932,
+        "em_b": 51.724137931034484,
+        "delta_pp": 17.24137931034483,
+        "ci_pp": [
+          5.172413793103448,
+          29.310344827586203
+        ],
+        "gains": 12,
+        "losses": 2,
+        "mcnemar_p": 0.012939453125
+      }
+    }
+  },
+  "per_repo": {
+    "alibaba_FederatedScope": {
+      "prompt_only": 28.5,
+      "bm25": 25.0,
+      "locality": 24.0,
+      "nearest": 23.5,
+      "crossfile": 47.0
+    },
+    "awslabs_fortuna": {
+      "prompt_only": 41.5,
+      "bm25": 40.5,
+      "locality": 39.5,
+      "nearest": 39.5,
+      "crossfile": 60.0
+    },
+    "google_vizier": {
+      "prompt_only": 33.0,
+      "bm25": 26.5,
+      "locality": 26.5,
+      "nearest": 26.5,
+      "crossfile": 35.0
+    },
+    "huggingface_diffusers": {
+      "prompt_only": 41.5,
+      "bm25": 35.0,
+      "locality": 33.5,
+      "nearest": 31.0,
+      "crossfile": 56.5
+    },
+    "huggingface_evaluate": {
+      "prompt_only": 35.5,
+      "bm25": 27.5,
+      "locality": 27.5,
+      "nearest": 27.5,
+      "crossfile": 39.5
+    },
+    "nerfstudio-project_nerfstudio": {
+      "prompt_only": 32.0,
+      "bm25": 26.5,
+      "locality": 26.5,
+      "nearest": 25.5,
+      "crossfile": 36.5
+    },
+    "opendilab_ACE": {
+      "prompt_only": 28.0,
+      "bm25": 28.5,
+      "locality": 24.5,
+      "nearest": 25.5,
+      "crossfile": 44.5
+    },
+    "pytorch_rl": {
+      "prompt_only": 37.0,
+      "bm25": 32.5,
+      "locality": 32.5,
+      "nearest": 32.0,
+      "crossfile": 41.5
+    }
+  }
+}

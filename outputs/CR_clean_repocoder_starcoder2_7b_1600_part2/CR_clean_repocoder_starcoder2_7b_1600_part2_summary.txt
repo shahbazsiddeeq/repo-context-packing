@@ -1,0 +1,30 @@
+RepoEval completion experiment
+
+Model: bigcode/starcoder2-7b
+Examples requested: 800
+Usable examples: 800
+Skipped repo: 0
+Skipped files: 0
+Skipped chunks: 0
+Skipped retrieval: 0
+
+Prompt-only EM: 0.3162
+BM25 top-1 context EM: 0.2812
+Locality top-1 context EM: 0.2687
+Nearest-window (no retriever) EM: 0.2687
+Cross-file BM25 top-1 EM: 0.4200
+Cross-file chunk found: 800/800
+
+Delta (BM25 - Prompt-only): -0.0350
+Delta (Locality - BM25): -0.0125
+Delta (Locality - Prompt-only): -0.0475
+
+Chunk size: 120
+Chunk overlap: 20
+Top-k retrieval: 10
+Same-file bonus: 150.0
+Line-distance weight: 0.2
+Max input tokens: 16000
+Prompt style: repocoder
+Prompt window lines: None
+Control arms: True
