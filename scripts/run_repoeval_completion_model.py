@@ -26,6 +26,7 @@ CHUNK_OVERLAP = 20
 SAME_FILE_BONUS = 150.0
 LINE_DISTANCE_WEIGHT = 0.2
 MAX_NEW_TOKENS = 32
+CROSSFILE_SEARCH_K = 50
 
 
 def save_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
@@ -49,6 +50,7 @@ def load_checkpoint(path: Path):
         for row in reader:
             # restore int columns
             for col in ("line_no", "em_prompt_only", "em_bm25", "em_locality",
+                        "em_nearest", "em_crossfile", "crossfile_found",
                         "bm25_top1_start", "bm25_top1_end",
                         "locality_top1_start", "locality_top1_end"):
                 if col in row:
@@ -128,15 +130,35 @@ def build_prompt_with_context_raw(target_path: str, prompt: str, context_text: s
     return f"{context_text}\n\n# {target_path}\n{prompt}"
 
 
+def build_prompt_only_repocoder(target_path: str, prompt: str) -> str:
+    # RepoCoder/RepoEval convention: the in-file prefix is given as-is.
+    return prompt
+
+
+def build_prompt_with_context_repocoder(target_path: str, prompt: str, context_text: str,
+                                        context_path: str) -> str:
+    # RepoCoder/RepoEval convention: retrieved code is placed before the prefix as
+    # commented-out lines with a provenance header, so the model cannot continue the
+    # context block itself and no header line is left to be copied.
+    header = f"# the below code fragment can be found in:\n# {context_path}\n"
+    body = "\n".join("# " + line for line in context_text.splitlines())
+    return f"{header}{body}\n{prompt}"
+
+
 def build_prompt_only(target_path: str, prompt: str, style: str) -> str:
     if style == "raw":
         return build_prompt_only_raw(target_path, prompt)
+    if style == "repocoder":
+        return build_prompt_only_repocoder(target_path, prompt)
     return build_prompt_only_instruction(target_path, prompt)
 
 
-def build_prompt_with_context(target_path: str, prompt: str, context_text: str, style: str) -> str:
+def build_prompt_with_context(target_path: str, prompt: str, context_text: str, style: str,
+                              context_path: str = "") -> str:
     if style == "raw":
         return build_prompt_with_context_raw(target_path, prompt, context_text)
+    if style == "repocoder":
+        return build_prompt_with_context_repocoder(target_path, prompt, context_text, context_path)
     return build_prompt_with_context_instruction(target_path, prompt, context_text)
 
 
@@ -231,9 +253,26 @@ def parse_args():
     )
     p.add_argument(
         "--prompt_style",
-        choices=["instruction", "raw"],
+        choices=["instruction", "raw", "repocoder"],
         default="instruction",
         help="'instruction' = markdown headers (StarCoder2); 'raw' = plain code prefix (CodeLlama/DeepSeek base)",
+    )
+    p.add_argument(
+        "--prompt_window_lines",
+        type=int,
+        default=None,
+        help="If set, cap the in-file prefix shown to the model to its last W lines. "
+        "The SAME capped prefix is used for all three arms (prompt-only, BM25, locality), "
+        "which also removes the prefix-length confound between arms. Default None = uncapped.",
+    )
+    p.add_argument("--start_row", type=int, default=0,
+                   help="Process examples[start_row:end_row] only (for splitting a run across GPUs).")
+    p.add_argument("--end_row", type=int, default=None)
+    p.add_argument(
+        "--control_arms",
+        action="store_true",
+        help="Also run two control arms: nearest preceding same-file window (no retriever) "
+        "and highest-ranked cross-file BM25 chunk.",
     )
     return p.parse_args()
 
@@ -246,12 +285,15 @@ def main():
     max_input_tokens = args.max_input_tokens
     checkpoint_every = args.checkpoint_every
     prompt_style = args.prompt_style
+    prompt_window_lines = args.prompt_window_lines
+    control_arms = args.control_arms
 
     stem = output_dir.name
     per_example_csv = output_dir / f"{stem}_per_example.csv"
     summary_txt = output_dir / f"{stem}_summary.txt"
 
     examples = load_repoeval_file(REPOEVAL_FILE, max_rows=max_rows)
+    examples = examples[args.start_row:args.end_row]
     print(f"Loaded examples: {len(examples)}")
 
     # Resume from checkpoint if it exists
@@ -330,13 +372,56 @@ def main():
         bm25_top1 = bm25_results[0]
         locality_top1 = locality_results[0]
 
-        prompt_only_text = build_prompt_only(target_path, generation_prefix, prompt_style)
-        bm25_prompt_text = build_prompt_with_context(target_path, retrieval_query, bm25_top1.text, prompt_style)
-        locality_prompt_text = build_prompt_with_context(target_path, retrieval_query, locality_top1.text, prompt_style)
+        # E1: cap the in-file prefix shown to the model to its last W lines, and use
+        # the SAME capped prefix for all three arms. This tests whether retrieval helps
+        # once the in-file prefix is short, and removes the prefix-length confound (the
+        # context arms previously used the short retrieval_query while prompt-only used
+        # the full generation_prefix).
+        if prompt_window_lines is not None:
+            shown_prefix = "\n".join(generation_prefix.splitlines()[-prompt_window_lines:])
+        else:
+            shown_prefix = generation_prefix
+
+        def ctx_path(r):
+            return r.metadata.get("path", "") if hasattr(r, "metadata") else r.get("path", "")
+
+        prompt_only_text = build_prompt_only(target_path, shown_prefix, prompt_style)
+        bm25_prompt_text = build_prompt_with_context(
+            target_path, shown_prefix, bm25_top1.text, prompt_style, ctx_path(bm25_top1))
+        locality_prompt_text = build_prompt_with_context(
+            target_path, shown_prefix, locality_top1.text, prompt_style, ctx_path(locality_top1))
 
         pred_prompt_only = generate_next_line(model, tokenizer, prompt_only_text, device, max_input_tokens)
         pred_bm25 = generate_next_line(model, tokenizer, bm25_prompt_text, device, max_input_tokens)
         pred_locality = generate_next_line(model, tokenizer, locality_prompt_text, device, max_input_tokens)
+
+        # Control arms (reviewer request), only with --control_arms:
+        # nearest = the same-file window that ends closest before the completion
+        #           line, with no retriever (pure locality heuristic);
+        # crossfile = the highest-ranked BM25 chunk from any other file.
+        nearest_chunk = None
+        crossfile_hit = None
+        pred_nearest = pred_crossfile = ""
+        em_n = em_c = 0
+        if control_arms:
+            same_file = [c for c in all_chunks if c.get("path") == target_path]
+            if same_file:
+                nearest_chunk = max(same_file, key=lambda c: c.get("end_line", -1))
+                nearest_text = build_prompt_with_context(
+                    target_path, shown_prefix, nearest_chunk["text"], prompt_style, target_path)
+                pred_nearest = generate_next_line(model, tokenizer, nearest_text, device, max_input_tokens)
+            else:
+                pred_nearest = pred_prompt_only
+            wide = retriever.search(retrieval_query, top_k=CROSSFILE_SEARCH_K)
+            crossfile_hit = next((r for r in wide if ctx_path(r) != target_path), None)
+            if crossfile_hit is not None:
+                cf_text = build_prompt_with_context(
+                    target_path, shown_prefix, crossfile_hit.text, prompt_style, ctx_path(crossfile_hit))
+                pred_crossfile = generate_next_line(model, tokenizer, cf_text, device, max_input_tokens)
+            else:
+                pred_crossfile = pred_prompt_only
+            em_n = exact_match(pred_nearest, gold_line)
+            em_c = exact_match(pred_crossfile, gold_line)
 
         if used_examples < 5:
             print("GOLD:", repr(gold_line))
@@ -375,6 +460,14 @@ def main():
             "locality_top1_path": locality_top1.metadata.get("path", ""),
             "locality_top1_start": locality_top1.metadata.get("start_line", -1),
             "locality_top1_end": locality_top1.metadata.get("end_line", -1),
+            "pred_nearest": pred_nearest,
+            "pred_crossfile": pred_crossfile,
+            "em_nearest": em_n,
+            "em_crossfile": em_c,
+            "nearest_start": nearest_chunk.get("start_line", -1) if nearest_chunk else -1,
+            "nearest_end": nearest_chunk.get("end_line", -1) if nearest_chunk else -1,
+            "crossfile_found": int(crossfile_hit is not None),
+            "crossfile_path": ctx_path(crossfile_hit) if crossfile_hit is not None else "",
         })
 
         if new_since_checkpoint >= checkpoint_every:
@@ -405,6 +498,10 @@ def main():
         f"Prompt-only EM: {em_po_final:.4f}",
         f"BM25 top-1 context EM: {em_b_final:.4f}",
         f"Locality top-1 context EM: {em_l_final:.4f}",
+        *( [f"Nearest-window (no retriever) EM: {sum(int(r['em_nearest']) for r in rows)/used_examples:.4f}",
+            f"Cross-file BM25 top-1 EM: {sum(int(r['em_crossfile']) for r in rows)/used_examples:.4f}",
+            f"Cross-file chunk found: {sum(int(r['crossfile_found']) for r in rows)}/{used_examples}"]
+           if control_arms else [] ),
         "",
         f"Delta (BM25 - Prompt-only): {em_b_final - em_po_final:.4f}",
         f"Delta (Locality - BM25): {em_l_final - em_b_final:.4f}",
@@ -417,6 +514,8 @@ def main():
         f"Line-distance weight: {LINE_DISTANCE_WEIGHT}",
         f"Max input tokens: {max_input_tokens}",
         f"Prompt style: {prompt_style}",
+        f"Prompt window lines: {prompt_window_lines}",
+        f"Control arms: {control_arms}",
     ]
 
     save_text(summary_txt, "\n".join(report))

@@ -1,47 +1,49 @@
 # Python
-  __pycache__/
-  *.pyc
-  *.pyo
-  .venv/
-  .venv-linux/
-  
-  # Data
-  data/raw/
-  data/processed/
-  data/cache/
-  
-  # Large benchmark data
-  cceval/
-  
-  # Outputs -- intermediate/scratch runs excluded
-  checkpoints/
-  outputs/logs/
-  outputs/runs/
-  outputs/completion_step1/
-  outputs/completion_step1_smoketest/
-  outputs/completion_step1_smoketest_v1/
-  outputs/completion_step1_v1/
-  outputs/completion_step1_v2/
-  outputs/dense_smoke/
-  outputs/dense_smoke2/
-  outputs/dense_timing/
-  outputs/cceval_python_hf_bm25_smoke/
-  outputs/cceval_python_hf_promptonly_smoke/
-  outputs/completion_dense_starcoder2_7b.log
-  outputs/*_log.txt
-  outputs/dense_retrieval_log.txt
-  
-  # OS / editor
-  .DS_Store
-  .vscode/
-  .idea/
-  *.swp
-  
-  # Secrets
-  .env
-  .env.*
-  
-  # Scratch
-  commands.txt
-  *.log
-  
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.venv-linux/
+
+# Data
+data/
+cceval/
+
+# Outputs -- intermediate/scratch runs excluded
+checkpoints/
+outputs/logs/
+outputs/runs/
+outputs/completion_step1/
+outputs/completion_step1_smoketest/
+outputs/completion_step1_smoketest_v1/
+outputs/completion_step1_v1/
+outputs/completion_step1_v2/
+outputs/dense_smoke/
+outputs/dense_smoke2/
+outputs/dense_timing/
+outputs/cceval_python_hf_bm25_smoke/
+outputs/cceval_python_hf_promptonly_smoke/
+outputs/clean_smoke_raw_sc2_7b/
+outputs/clean_smoke_starcoder2_7b/
+outputs/E1_*/
+outputs/E5_stratification/
+outputs/camera_ready_logs/
+outputs/*_log.txt
+outputs/dense_retrieval_log.txt
+
+paper/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Scratch
+commands.txt
+*.log
