@@ -1,3 +1,0 @@
-method,usable_examples,MRR,Recall@1,Recall@5,same_file_bonus,line_distance_weight,top_k,max_rows,max_files_per_repo
-fixed_bm25,1600,0.7060252976190481,0.583125,0.855625,,,10,full,1000
-fixed_bm25_locality_rerank,1600,0.7393787202380957,0.620625,0.883125,150.0,0.2,10,full,1000

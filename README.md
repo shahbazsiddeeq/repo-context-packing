@@ -15,7 +15,7 @@ s'(c) = s_ret(c) + I[c.path = f] · (β − λ · d(c, l))
 
 Implementation: `src/retrieval/locality_reranker.py`.
 
-**Indexing protocol.** In the truncated protocol (used for all valid results), the target
+**Indexing protocol.** The target
 file is cut to lines `1 … l−1` before chunking (`truncate_line` in
 `scripts/run_repoeval_first_experiment.py::load_python_files_from_repo`), so no chunk
 contains the reference line or any later line. All other files are indexed in full.
@@ -24,7 +24,7 @@ contains the reference line or any later line. All other files are indexed in fu
 
 ## Results
 
-### Clean re-evaluation (truncated index)
+### Truncated-index evaluation (Sections 5.2 and 5.3)
 
 StarCoder2-7B, all 1,600 RepoEval line-level instances, RepoCoder prompt format
 (retrieved chunk as commented lines before the prefix), top-1 context.
@@ -43,7 +43,7 @@ StarCoder2-7B, all 1,600 RepoEval line-level instances, RepoCoder prompt format
 
 Full statistics: `outputs/CR_clean_merged/clean_run_stats.json`.
 
-### Leakage analysis of the untruncated runs
+### Exposure analysis of the untruncated-index runs (Section 5.1)
 
 | | Count |
 |---|---|
@@ -96,10 +96,6 @@ python scripts/analyze_leakage.py
 python scripts/run_crosscodeeval_official_prompts.py
 ```
 
-The remaining scripts (`run_repoeval_full_locality.py`, `run_dense_retrieval.py`,
-`run_dense_completion_model.py`, `sweep_locality_reranker.py`,
-`run_chunking_comparison_full.py`) produced the **untruncated** runs and do not truncate
-the target file.
 
 ---
 
@@ -112,18 +108,16 @@ the target file.
 
 ## Pre-computed outputs
 
-### Valid (truncated index)
+### Truncated-index runs (Sections 5.2 and 5.3)
 
 | Directory | Contents |
 |---|---|
-| `outputs/CR_clean_merged/` | Clean run, all 1,600 instances, five conditions + `clean_run_stats.json` |
-| `outputs/CR_clean_repocoder_starcoder2_7b_1600/` | Clean run, instances 0–799 |
-| `outputs/CR_clean_repocoder_starcoder2_7b_1600_part2/` | Clean run, instances 800–1599 |
-| `outputs/clean_completion_starcoder2_7b_1600/` | Earlier truncated run with an uncommented prompt format; the model copies the `# path` header line in 506+ outputs, so it is reported only as a prompt-format check |
-| `outputs/leakage_analysis/` | Exposure analysis of the untruncated runs |
-| `outputs/cceval_python_hf_bm25_full/`, `outputs/cceval_python_hf_promptonly_full/` | CrossCodeEval (not affected by the target-file problem) |
+| `outputs/CR_clean_merged/` | All 1,600 instances, five conditions, and `clean_run_stats.json` |
+| `outputs/CR_clean_repocoder_starcoder2_7b_1600/` | Instances 0–799 |
+| `outputs/CR_clean_repocoder_starcoder2_7b_1600_part2/` | Instances 800–1599 |
+| `outputs/clean_completion_starcoder2_7b_1600/` | Run with an uncommented prompt format (prompt-format check, Section 7) |
 
-### Untruncated index (leaky; kept for the leakage analysis only)
+### Untruncated-index runs (Section 5.1)
 
 | Directory | Contents |
 |---|---|
@@ -132,8 +126,14 @@ the target file.
 | `outputs/completion_codellama_7b_1600/` | CodeLlama-7B |
 | `outputs/completion_deepseek_6b_1600/` | DeepSeek-Coder-6.7B |
 | `outputs/completion_codeqwen_7b_1600/` | CodeQwen1.5-7B |
-| `outputs/completion_dense_starcoder2_7b/` | Dense (UniXcoder) + locality |
-| `outputs/chunking_comparison_1600/`, `outputs/ablation_beta_lambda/`, `outputs/dense_retrieval/`, `outputs/analysis/` | Retrieval metrics, β×λ grid, error analysis |
+| `outputs/completion_dense_starcoder2_7b/` | StarCoder2-7B, UniXcoder dense retrieval |
+| `outputs/leakage_analysis/` | Exposure analysis computed from these runs |
+
+### CrossCodeEval (Appendix)
+
+| Directory | Contents |
+|---|---|
+| `outputs/cceval_python_hf_bm25_full/`, `outputs/cceval_python_hf_promptonly_full/` | StarCoder2-7B with and without the provided cross-file context |
 
 ---
 
