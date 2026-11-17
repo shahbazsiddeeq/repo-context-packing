@@ -76,7 +76,14 @@ The runner checkpoints every 50 instances and resumes if restarted.
 
 ```bash
 python scripts/analyze_clean_run.py outputs/CR_clean_merged/CR_clean_merged_per_example.csv
-python scripts/fig_clean_results.py outputs/CR_clean_merged/CR_clean_merged_per_example.csv figures/   # Figs. 2-6
+python scripts/fig_clean_results.py outputs/CR_clean_merged/CR_clean_merged_per_example.csv figures/   # Figs. 2-4
+
+# Prompt-chunk analysis (Section 5.3, Tables 3-4): ES, overlap with the prefix,
+# missing identifiers, kind of reference line, copying
+python scripts/extract_prompt_chunks.py outputs/CR_clean_merged/CR_clean_merged_per_example.csv \
+    outputs/CR_clean_analysis/prompt_chunks.jsonl 8
+python scripts/analyze_clean_chunks.py outputs/CR_clean_merged/CR_clean_merged_per_example.csv \
+    outputs/CR_clean_analysis/prompt_chunks.jsonl outputs/CR_clean_analysis/chunk_analysis.json
 ```
 
 ### CrossCodeEval (Section 5.1; uses the benchmark's own cross-file retrieval files)
@@ -104,6 +111,7 @@ python scripts/run_crosscodeeval_official_prompts.py
 | `outputs/CR_clean_merged/` | All 1,600 instances, five conditions, and `clean_run_stats.json` |
 | `outputs/CR_clean_repocoder_starcoder2_7b_1600/` | Instances 0–799 |
 | `outputs/CR_clean_repocoder_starcoder2_7b_1600_part2/` | Instances 800–1599 |
+| `outputs/CR_clean_analysis/chunk_analysis.json` | Prompt-chunk analysis behind Tables 3 and 4 (`prompt_chunks.jsonl` is regenerated, not stored) |
 | `outputs/clean_completion_starcoder2_7b_1600/` | Pilot with an uncommented prompt format (Section 7) |
 
 ### CrossCodeEval (Section 5.1)
