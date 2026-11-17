@@ -29,8 +29,8 @@ LOSS = "#b4b2ab"
 CONDS = [  # (column, label, colour, marker)
     ("crossfile", "Cross-file chunk", CROSS, "D"),
     ("prompt_only", "Prompt-only (no chunk)", BASE, "o"),
-    ("bm25", "BM25 top-1", SAME, "s"),
-    ("locality", "Locality top-1", SAME, "^"),
+    ("bm25", "BM25", SAME, "s"),
+    ("locality", "Locality", SAME, "^"),
     ("nearest", "Nearest window", SAME, "v"),
 ]
 REPO_LABEL = {
@@ -87,7 +87,7 @@ def fig_per_repo(rows, out: Path):
                    key=lambda k: sum(int(r["em_crossfile"]) - int(r["em_prompt_only"])
                                      for r in rows if r["repo"] == k))
     series = [("prompt_only", "Prompt-only", BASE, "o"),
-              ("locality", "Locality top-1", SAME, "^"),
+              ("locality", "Locality", SAME, "^"),
               ("crossfile", "Cross-file chunk", CROSS, "D")]
     fig, ax = plt.subplots(figsize=(4.8, 2.6))
     for y, repo in enumerate(repos):
@@ -120,7 +120,7 @@ def fig_chunk_source(rows, out: Path):
     parts = [("nearest", "Nearest window", SAME),
              ("other", "Other same-file chunk", OTHER_SAME),
              ("cross", "Cross-file chunk", CROSS)]
-    arms = [("locality", "Locality top-1"), ("bm25", "BM25 top-1")]
+    arms = [("locality", "Locality"), ("bm25", "BM25")]
     fig, ax = plt.subplots(figsize=(4.8, 1.75))
     for y, (arm, label) in enumerate(arms):
         left = 0
@@ -145,8 +145,8 @@ def fig_chunk_source(rows, out: Path):
 
 
 def fig_gain_loss(rows, out: Path):
-    conds = [("crossfile", "Cross-file chunk"), ("bm25", "BM25 top-1"),
-             ("locality", "Locality top-1"), ("nearest", "Nearest window")]
+    conds = [("crossfile", "Cross-file chunk"), ("bm25", "BM25"),
+             ("locality", "Locality"), ("nearest", "Nearest window")]
     fig, ax = plt.subplots(figsize=(4.8, 1.8))
     ys = list(range(len(conds)))[::-1]
     for y, (col, label) in zip(ys, conds):
@@ -175,7 +175,7 @@ def fig_gain_loss(rows, out: Path):
 def fig_strata(rows, out: Path):
     strata = [("same", "BM25 top-1 in the same file", SAME, "o"),
               ("cross", "BM25 top-1 in another file", CROSS, "D")]
-    conds = [("prompt_only", "Prompt-only"), ("bm25", "BM25 top-1"), ("locality", "Locality top-1"),
+    conds = [("prompt_only", "Prompt-only"), ("bm25", "BM25"), ("locality", "Locality"),
              ("nearest", "Nearest window"), ("crossfile", "Cross-file chunk")]
     fig, ax = plt.subplots(figsize=(4.8, 2.0))
     ys = list(range(len(conds)))[::-1]
